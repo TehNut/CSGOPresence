@@ -11,9 +11,8 @@ public class CSGOGamestate {
 
     public static final EventBus EVENT_BUS = new EventBus("gamestate_updater");
 
-    public CSGOGamestate(int port) throws IOException {
+    public static void initGamestate(int port) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(port), port);
-        server.setExecutor(null);
         server.createContext("/", new StateReciever());
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();

@@ -48,7 +48,7 @@ public class CSGOPresence {
 
         try {
             // TODO - Print default config to cfg dir
-            new CSGOGamestate(port);
+            CSGOGamestate.initGamestate(port);
             CSGOGamestate.EVENT_BUS.register(new EventHandler());
         } catch (IOException e) {
             System.out.println("Failed to initialize game state.");
