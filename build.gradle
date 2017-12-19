@@ -1,0 +1,25 @@
+plugins {
+    id "java"
+    id "maven"
+    id "application"
+    id "com.github.johnrengelman.shadow" version "2.0.1"
+}
+
+group 'info.tehnut.csgopresence'
+version '1.0.0'
+mainClassName = group + ".CSGOPresence"
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    compile "com.google.code.gson:gson:2.8.2"
+    compile "com.google.guava:guava:23.4-jre"
+    compile "net.sf.jopt-simple:jopt-simple:5.0.4"
+    compile 'com.github.MinnDevelopment:Java-DiscordRPC:v1.3.0'
+    compile "commons-io:commons-io:2.6"
+}

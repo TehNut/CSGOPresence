@@ -1,0 +1,21 @@
+# Directories
+/.gradle/
+/build/
+/eclipse/
+/run/
+/out/
+/.idea/
+/.metadata/
+/.settings/
+
+# File Extensions
+*.psd
+*.iml
+*.ipr
+*.iws
+*.classpath
+*.project
+*.class
+
+# Specific files
+Thumbs.db
