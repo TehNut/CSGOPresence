@@ -18,7 +18,6 @@ repositories {
 
 dependencies {
     compile "com.google.code.gson:gson:2.8.2"
-    compile "com.google.guava:guava:23.4-jre"
     compile "net.sf.jopt-simple:jopt-simple:5.0.4"
     compile 'com.github.MinnDevelopment:Java-DiscordRPC:v1.3.0'
 }

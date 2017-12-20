@@ -3,14 +3,13 @@ package info.tehnut.csgo.presence;
 import club.minnced.discord.rpc.DiscordEventHandlers;
 import club.minnced.discord.rpc.DiscordRPC;
 import club.minnced.discord.rpc.DiscordRichPresence;
-import com.google.common.eventbus.Subscribe;
 import info.tehnut.csgo.gamestate.CSGOGamestate;
-import info.tehnut.csgo.gamestate.EventUpdateState;
+import info.tehnut.csgo.gamestate.IStateUpdateWatcher;
 import info.tehnut.csgo.gamestate.data.GameMap;
+import info.tehnut.csgo.gamestate.data.GameState;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -49,7 +48,7 @@ public class CSGOPresence {
         try {
             // TODO - Print default config to cfg dir
             CSGOGamestate.initGamestate(port);
-            CSGOGamestate.EVENT_BUS.register(new EventHandler());
+            CSGOGamestate.subscribeWatcher(new UpdateWatcher());
         } catch (IOException e) {
             System.out.println("Failed to initialize game state.");
             e.printStackTrace();
@@ -73,12 +72,12 @@ public class CSGOPresence {
         callbackThread.start();
     }
 
-    public static class EventHandler {
-        @Subscribe
-        public void onStateUpdate(EventUpdateState event) {
-            if (event.isUser()) {
-                if (event.getGameState().getMap() != null) { // We're in a match of some kind
-                    GameMap map = event.getGameState().getMap();
+    public static class UpdateWatcher implements IStateUpdateWatcher {
+        
+        public void handleUpdatedState(GameState newState, GameState oldState) {
+            if (newState.isOurUser()) {
+                if (newState.getMap() != null) { // We're in a match of some kind
+                    GameMap map = newState.getMap();
 
                     DISCORD_PRESENCE.largeImageKey = map.getName();
                     DISCORD_PRESENCE.largeImageText = "Map: " + map.getName();
@@ -86,13 +85,13 @@ public class CSGOPresence {
 
                     String scoreText = "Score: ";
                     if (map.getCounterTerrorist() != null && map.getTerrorist() != null) { // If we're in a team-based mode (ie: Defusal)
-                        boolean ct = event.getGameState().getPlayer().getTeam().equalsIgnoreCase("ct");
+                        boolean ct = newState.getPlayer().getTeam().equalsIgnoreCase("ct");
                         // This will format the score as CT - T and place ><'s around the team the user is on
                         scoreText += String.format(ct ? ">%d<" : "%d", map.getCounterTerrorist().getScore());
                         scoreText += " - ";
                         scoreText += String.format(!ct ? ">%d<" : "%d", map.getCounterTerrorist().getScore());
                     } else { // Non-team-based (ie: Death match)
-                        scoreText += event.getGameState().getPlayer().getMatchStats().getScore();
+                        scoreText += newState.getPlayer().getMatchStats().getScore();
                     }
 
                     DISCORD_PRESENCE.state = scoreText;
@@ -107,7 +106,6 @@ public class CSGOPresence {
             DiscordRPC.INSTANCE.Discord_UpdatePresence(DISCORD_PRESENCE);
         }
 
-        @Nonnull
         private static String capitalize(String input) {
             return input.substring(0, 1).toUpperCase(Locale.ROOT) + input.substring(1, input.length());
         }

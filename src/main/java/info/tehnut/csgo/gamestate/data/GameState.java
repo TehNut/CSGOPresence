@@ -29,4 +29,8 @@ public class GameState {
     public Player getPlayer() {
         return player;
     }
+
+    public boolean isOurUser() {
+        return getPlayer() != null || getPlayer().getSteamId().equals(getProvider().getSteamId());
+    }
 }
