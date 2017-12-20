@@ -5,10 +5,9 @@ import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import info.tehnut.csgo.gamestate.data.GameState;
-import org.apache.commons.io.IOUtils;
+import info.tehnut.csgo.util.IOUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 public class StateReciever implements HttpHandler {
 
@@ -16,7 +15,7 @@ public class StateReciever implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
-        String response = IOUtils.toString(httpExchange.getRequestBody(), StandardCharsets.UTF_8);
+        String response = IOUtils.toString(httpExchange.getRequestBody());
         GameState gameState = GSON.fromJson(response, GameState.class);
         System.out.println("Received state update from " + gameState.getProvider().getName() + ". Posting to bus.");
         CSGOGamestate.EVENT_BUS.post(new EventUpdateState(gameState));

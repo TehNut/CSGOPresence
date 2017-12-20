@@ -21,5 +21,4 @@ dependencies {
     compile "com.google.guava:guava:23.4-jre"
     compile "net.sf.jopt-simple:jopt-simple:5.0.4"
     compile 'com.github.MinnDevelopment:Java-DiscordRPC:v1.3.0'
-    compile "commons-io:commons-io:2.6"
 }
