@@ -18,6 +18,6 @@ public class IOUtils {
     }
 
     public static String toString(InputStream inputStream) {
-        return String.join("", readLines(inputStream));
+        return String.join("\n", readLines(inputStream));
     }
 }
