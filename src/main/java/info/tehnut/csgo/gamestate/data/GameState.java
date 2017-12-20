@@ -31,6 +31,6 @@ public class GameState {
     }
 
     public boolean isOurUser() {
-        return getPlayer() != null || getPlayer().getSteamId().equals(getProvider().getSteamId());
+        return getPlayer() == null || getPlayer().getSteamId().equals(getProvider().getSteamId());
     }
 }
