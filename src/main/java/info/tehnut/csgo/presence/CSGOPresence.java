@@ -4,14 +4,10 @@ import club.minnced.discord.rpc.DiscordEventHandlers;
 import club.minnced.discord.rpc.DiscordRPC;
 import club.minnced.discord.rpc.DiscordRichPresence;
 import info.tehnut.csgo.gamestate.CSGOGamestate;
-import info.tehnut.csgo.gamestate.IStateUpdateWatcher;
-import info.tehnut.csgo.gamestate.data.GameMap;
-import info.tehnut.csgo.gamestate.data.GameState;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 import java.io.IOException;
-import java.util.Locale;
 
 public class CSGOPresence {
 
@@ -45,6 +41,8 @@ public class CSGOPresence {
         String dir = options.has("dir") ? (String) options.valueOf("dir") : "";
         int port = options.has("port") ? (int) options.valueOf("port") : 1234;
 
+        MapImages.initNames();
+
         try {
             // TODO - Print default config to cfg dir
             CSGOGamestate.initGamestate(port);
@@ -72,42 +70,4 @@ public class CSGOPresence {
         callbackThread.start();
     }
 
-    public static class UpdateWatcher implements IStateUpdateWatcher {
-        
-        public void handleUpdatedState(GameState newState, GameState oldState) {
-            if (newState.isOurUser()) {
-                if (newState.getMap() != null) { // We're in a match of some kind
-                    GameMap map = newState.getMap();
-
-                    DISCORD_PRESENCE.largeImageKey = map.getName();
-                    DISCORD_PRESENCE.largeImageText = "Map: " + map.getName();
-                    DISCORD_PRESENCE.details = capitalize(map.getMode()); // deathmatch -> Deathmatch
-
-                    String scoreText = "Score: ";
-                    if (map.getCounterTerrorist() != null && map.getTerrorist() != null) { // If we're in a team-based mode (ie: Defusal)
-                        boolean ct = newState.getPlayer().getTeam().equalsIgnoreCase("ct");
-                        // This will format the score as CT - T and place ><'s around the team the user is on
-                        scoreText += String.format(ct ? ">%d<" : "%d", map.getCounterTerrorist().getScore());
-                        scoreText += " - ";
-                        scoreText += String.format(!ct ? ">%d<" : "%d", map.getCounterTerrorist().getScore());
-                    } else { // Non-team-based (ie: Death match)
-                        scoreText += newState.getPlayer().getMatchStats().getScore();
-                    }
-
-                    DISCORD_PRESENCE.state = scoreText;
-                } else { // We're not in a match. Must be in the main menu... or at least a menu of some sort... probably
-                    DISCORD_PRESENCE.details = "In menu";
-                    DISCORD_PRESENCE.state = null;
-                    DISCORD_PRESENCE.largeImageKey = null;
-                    DISCORD_PRESENCE.largeImageText = null;
-                }
-            }
-
-            DiscordRPC.INSTANCE.Discord_UpdatePresence(DISCORD_PRESENCE);
-        }
-
-        private static String capitalize(String input) {
-            return input.substring(0, 1).toUpperCase(Locale.ROOT) + input.substring(1, input.length());
-        }
-    }
 }
