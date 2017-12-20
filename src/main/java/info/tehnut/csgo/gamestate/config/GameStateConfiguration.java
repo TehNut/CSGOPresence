@@ -29,8 +29,6 @@ public class GameStateConfiguration {
         this.data = data;
     }
 
-    // Dear god this is cancer. Why couldn't it just be normal json :(
-    // TODO - See if we can use gson and just like... nuke the colons or something :thonk:
     public void print(File gameDir, boolean overwrite) {
         if (!gameDir.isDirectory())
             throw new IllegalArgumentException("gameDir must be a directory.");
@@ -48,12 +46,46 @@ public class GameStateConfiguration {
             configFile.delete();
             configFile.createNewFile();
             FileWriter writer = new FileWriter(configFile);
-            writer.write(toString());
+            writer.write(toVson());
             writer.close();
         } catch (IOException e) {
             System.out.println("Failed to write game state configuration");
             e.printStackTrace();
         }
+    }
+
+    // Dear god this is cancer. Why couldn't it just be normal json :(
+    // TODO - See if we can use gson and just like... nuke the colons or something :thonk:
+    public String toVson() {
+        StringBuilder config = new StringBuilder();
+        config.append("\"").append(name).append("\"\n{"); // Open up our config object
+        config.append("\n  \"uri\" \"").append(uri).append("\""); // Set the URI which is required
+
+        config.append("\n  \"timeout\" \"").append(String.valueOf(timeout)).append("\""); // Set the timeout which *we* require
+        if (buffer != -1)
+            config.append("\n  \"buffer\" \"").append(String.valueOf(buffer)).append("\""); // Optionally set the buffer
+        if (throttle != -1)
+            config.append("\n  \"throttle\" \"").append(String.valueOf(throttle)).append("\""); // Optionally set the throttle
+        if (heartbeat != -1)
+            config.append("\n  \"heartbeat\" \"").append(String.valueOf(heartbeat)).append("\""); // Optionally set the heartbeat
+
+        if (!auth.isEmpty()) { // Optionally set our auth keys
+            config.append("\n  \"auth\"").append("\n  {"); // Open 'er up
+            for (Map.Entry<String, String> entry : auth.entrySet())
+                config.append("\n   \"").append(entry.getKey()).append("\" \"").append(entry.getValue()).append("\""); // Stick each entry in there
+            config.append("\n  }"); // Close 'er down
+        }
+
+        if (!data.isEmpty()) { // "Optionally" set our data requests
+            config.append("\n  \"data\"").append("\n  {"); // Open 'er up
+            for (DataType type : data)
+                config.append("\n   \"").append(type.toString()).append("\" \"").append("1").append("\""); // Just stick each type we want with a value of 1 to enable it
+            config.append("\n  }"); // Close 'er down
+        }
+
+        config.append("\n}"); // Close the config object
+
+        return config.toString();
     }
 
     public String getName() {
@@ -86,38 +118,5 @@ public class GameStateConfiguration {
 
     public Set<DataType> getData() {
         return data;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder config = new StringBuilder();
-        config.append("\"").append(name).append("\"\n{"); // Open up our config object
-        config.append("\n  \"uri\" \"").append(uri).append("\""); // Set the URI which is required
-
-        config.append("\n  \"timeout\" \"").append(String.valueOf(timeout)).append("\""); // Set the timeout which *we* require
-        if (buffer != -1)
-            config.append("\n  \"buffer\" \"").append(String.valueOf(buffer)).append("\""); // Optionally set the buffer
-        if (throttle != -1)
-            config.append("\n  \"throttle\" \"").append(String.valueOf(throttle)).append("\""); // Optionally set the throttle
-        if (heartbeat != -1)
-            config.append("\n  \"heartbeat\" \"").append(String.valueOf(heartbeat)).append("\""); // Optionally set the heartbeat
-
-        if (!auth.isEmpty()) { // Optionally set our auth keys
-            config.append("\n  \"auth\"").append("\n  {"); // Open 'er up
-            for (Map.Entry<String, String> entry : auth.entrySet())
-                config.append("\n   \"").append(entry.getKey()).append("\" \"").append(entry.getValue()).append("\""); // Stick each entry in there
-            config.append("\n  }"); // Close 'er down
-        }
-
-        if (!data.isEmpty()) { // "Optionally" set our data requests
-            config.append("\n  \"data\"").append("\n  {"); // Open 'er up
-            for (DataType type : data)
-                config.append("\n   \"").append(type.toString()).append("\" \"").append("1").append("\""); // Just stick each type we want with a value of 1 to enable it
-            config.append("\n  }"); // Close 'er down
-        }
-
-        config.append("\n}"); // Close the config object
-
-        return config.toString();
     }
 }
