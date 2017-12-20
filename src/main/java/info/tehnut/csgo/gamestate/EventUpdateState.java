@@ -1,6 +1,6 @@
-package info.tehnut.csgogamestate;
+package info.tehnut.csgo.gamestate;
 
-import info.tehnut.csgogamestate.data.GameState;
+import info.tehnut.csgo.gamestate.data.GameState;
 
 public class EventUpdateState {
 

@@ -1,4 +1,4 @@
-package info.tehnut.csgogamestate;
+package info.tehnut.csgo.gamestate;
 
 import com.google.common.eventbus.EventBus;
 import com.sun.net.httpserver.HttpServer;

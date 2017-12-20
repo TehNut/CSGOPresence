@@ -1,12 +1,12 @@
-package info.tehnut.csgopresence;
+package info.tehnut.csgo.presence;
 
 import club.minnced.discord.rpc.DiscordEventHandlers;
 import club.minnced.discord.rpc.DiscordRPC;
 import club.minnced.discord.rpc.DiscordRichPresence;
 import com.google.common.eventbus.Subscribe;
-import info.tehnut.csgogamestate.CSGOGamestate;
-import info.tehnut.csgogamestate.EventUpdateState;
-import info.tehnut.csgogamestate.data.GameMap;
+import info.tehnut.csgo.gamestate.CSGOGamestate;
+import info.tehnut.csgo.gamestate.EventUpdateState;
+import info.tehnut.csgo.gamestate.data.GameMap;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 

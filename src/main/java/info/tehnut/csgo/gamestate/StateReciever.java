@@ -1,10 +1,10 @@
-package info.tehnut.csgogamestate;
+package info.tehnut.csgo.gamestate;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import info.tehnut.csgogamestate.data.GameState;
+import info.tehnut.csgo.gamestate.data.GameState;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;

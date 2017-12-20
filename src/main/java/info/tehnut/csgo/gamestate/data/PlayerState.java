@@ -1,4 +1,4 @@
-package info.tehnut.csgogamestate.data;
+package info.tehnut.csgo.gamestate.data;
 
 import com.google.gson.annotations.SerializedName;
 
