@@ -8,7 +8,9 @@ public class GameMap {
     private final String name;
     private final String phase;
     private final int round;
+    @SerializedName("team_ct")
     private final Team counterTerrorist;
+    @SerializedName("team_t")
     private final Team terrorist;
     @SerializedName("num_matches_to_win_series")
     private final int matchesToWinSeries;
