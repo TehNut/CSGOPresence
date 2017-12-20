@@ -4,9 +4,13 @@ import club.minnced.discord.rpc.DiscordEventHandlers;
 import club.minnced.discord.rpc.DiscordRPC;
 import club.minnced.discord.rpc.DiscordRichPresence;
 import info.tehnut.csgo.gamestate.CSGOGamestate;
+import info.tehnut.csgo.gamestate.config.DataType;
+import info.tehnut.csgo.gamestate.config.GSConfigBuilder;
+import info.tehnut.csgo.gamestate.config.GameStateConfiguration;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import java.io.File;
 import java.io.IOException;
 
 public class CSGOPresence {
@@ -19,7 +23,7 @@ public class CSGOPresence {
 
     public static void main(String... args) {
         OptionParser parser = new OptionParser();
-        parser.accepts("dir", "The directory that CSGO is installed to. Currently unused.").withRequiredArg().ofType(String.class);
+        parser.accepts("dir", "The directory that CSGO is installed to. If provided, a default config will be printed.").withRequiredArg().ofType(String.class);
         parser.accepts("port", "The port to run the HTTP server on.").withRequiredArg().ofType(Integer.class);
         parser.accepts("help", "Prints help text and exits.");
 
@@ -44,7 +48,23 @@ public class CSGOPresence {
         MapImages.initNames();
 
         try {
-            // TODO - Print default config to cfg dir
+            if (!dir.isEmpty()) {
+                GameStateConfiguration gsConfig = new GSConfigBuilder("Discord Rich Presence Integration")
+                        .withLocalURI(port, null)
+                        .withData(
+                                DataType.PROVIDER,
+                                DataType.MAP,
+                                DataType.ROUND,
+                                DataType.PLAYER_ID,
+                                DataType.PLAYER_STATE,
+                                DataType.PLAYER_WEAPONS,
+                                DataType.PLAYER_MATCH_STATS
+                        )
+                        .withTimeout(15)
+                        .build();
+
+                gsConfig.print(new File(dir), true);
+            }
             CSGOGamestate.initGamestate(port);
             CSGOGamestate.subscribeWatcher(new UpdateWatcher());
         } catch (IOException e) {
