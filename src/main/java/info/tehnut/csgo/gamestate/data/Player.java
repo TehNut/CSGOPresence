@@ -57,6 +57,10 @@ public class Player {
         return weapons;
     }
 
+    public Weapon getActiveWeapon() {
+        return weapons.values().stream().filter(w -> !w.isHolstered()).findFirst().get();
+    }
+
     public MatchStats getMatchStats() {
         return matchStats;
     }

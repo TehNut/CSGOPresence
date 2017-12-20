@@ -4,17 +4,14 @@ import club.minnced.discord.rpc.DiscordRPC;
 import info.tehnut.csgo.gamestate.IStateUpdateWatcher;
 import info.tehnut.csgo.gamestate.data.GameMap;
 import info.tehnut.csgo.gamestate.data.GameState;
+import info.tehnut.csgo.gamestate.data.MatchStats;
+import info.tehnut.csgo.gamestate.data.Weapon;
 
 import java.util.Locale;
 
 public class UpdateWatcher implements IStateUpdateWatcher {
 
-    private long lastCheck;
-
     public void handleUpdatedState(GameState newState, GameState oldState) {
-        if (System.currentTimeMillis() - lastCheck < 1000 * 14) // Occasionally CS will spam updates, so we need to rate limit it.
-            return;
-
         if (newState.isOurUser()) {
             if (newState.getMap() != null) { // We're in a match of some kind
                 GameMap map = newState.getMap();
@@ -27,13 +24,17 @@ public class UpdateWatcher implements IStateUpdateWatcher {
                 String scoreText = "Score: ";
                 if (map.getCounterTerrorist() != null && map.getTerrorist() != null) { // If we're in a team-based mode (ie: Defusal)
                     boolean ct = newState.getPlayer().getTeam().equalsIgnoreCase("ct");
-                    // This will format the score as CT - T and place ><'s around the team the user is on
-                    scoreText += String.format(ct ? ">%d<" : "%d", map.getCounterTerrorist().getScore());
-                    scoreText += " - ";
-                    scoreText += String.format(!ct ? ">%d<" : "%d", map.getCounterTerrorist().getScore());
+                    if (ct)
+                        scoreText += map.getCounterTerrorist().getScore() + " - " + map.getTerrorist().getScore();
+                    else
+                        scoreText += map.getTerrorist().getScore() + " - " + map.getCounterTerrorist().getScore();
                 } else { // Non-team-based (ie: Death match)
                     scoreText += newState.getPlayer().getMatchStats().getScore();
                 }
+
+                CSGOPresence.DISCORD_PRESENCE.smallImageKey = "sdefault";
+                MatchStats matchStats = newState.getPlayer().getMatchStats();
+                CSGOPresence.DISCORD_PRESENCE.smallImageText = String.format("%dK / %dA / %dD", matchStats.getKills(), matchStats.getAssists(), matchStats.getDeaths());
 
                 CSGOPresence.DISCORD_PRESENCE.state = scoreText;
             } else { // We're not in a match. Must be in the main menu... or at least a menu of some sort... probably
@@ -47,7 +48,6 @@ public class UpdateWatcher implements IStateUpdateWatcher {
         }
 
         DiscordRPC.INSTANCE.Discord_UpdatePresence(CSGOPresence.DISCORD_PRESENCE);
-        lastCheck = System.currentTimeMillis();
     }
 
     private static String capitalize(String input) {
