@@ -44,38 +44,11 @@ public class GameStateConfiguration {
         if (configFile.exists() && !overwrite)
             return;
 
-        configFile.delete();
-
         try {
+            configFile.delete();
             configFile.createNewFile();
             FileWriter writer = new FileWriter(configFile);
-
-            writer.append("\"").append(name).append("\"\n{"); // Open up our config object
-            writer.append("\n  \"uri\" \"").append(uri).append("\""); // Set the URI which is required
-
-            writer.append("\n  \"timeout\" \"").append(String.valueOf(timeout)).append("\""); // Set the timeout which *we* require
-            if (buffer != -1)
-                writer.append("\n  \"buffer\" \"").append(String.valueOf(buffer)).append("\""); // Optionally set the buffer
-            if (throttle != -1)
-                writer.append("\n  \"throttle\" \"").append(String.valueOf(throttle)).append("\""); // Optionally set the throttle
-            if (heartbeat != -1)
-                writer.append("\n  \"heartbeat\" \"").append(String.valueOf(heartbeat)).append("\""); // Optionally set the heartbeat
-
-            if (!auth.isEmpty()) { // Optionally set our auth keys
-                writer.append("\n  \"auth\"").append("\n  {"); // Open 'er up
-                for (Map.Entry<String, String> entry : auth.entrySet())
-                    writer.append("\n   \"").append(entry.getKey()).append("\" \"").append(entry.getValue()).append("\""); // Stick each entry in there
-                writer.append("\n  }"); // Close 'er down
-            }
-
-            if (!data.isEmpty()) { // "Optionally" set our data requests
-                writer.append("\n  \"data\"").append("\n  {"); // Open 'er up
-                for (DataType type : data)
-                    writer.append("\n   \"").append(type.toString()).append("\" \"").append("1").append("\""); // Just stick each type we want with a value of 1 to enable it
-                writer.append("\n  }"); // Close 'er down
-            }
-
-            writer.append("\n}"); // Close the config object
+            writer.write(toString());
             writer.close();
         } catch (IOException e) {
             System.out.println("Failed to write game state configuration");
@@ -113,5 +86,38 @@ public class GameStateConfiguration {
 
     public Set<DataType> getData() {
         return data;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder config = new StringBuilder();
+        config.append("\"").append(name).append("\"\n{"); // Open up our config object
+        config.append("\n  \"uri\" \"").append(uri).append("\""); // Set the URI which is required
+
+        config.append("\n  \"timeout\" \"").append(String.valueOf(timeout)).append("\""); // Set the timeout which *we* require
+        if (buffer != -1)
+            config.append("\n  \"buffer\" \"").append(String.valueOf(buffer)).append("\""); // Optionally set the buffer
+        if (throttle != -1)
+            config.append("\n  \"throttle\" \"").append(String.valueOf(throttle)).append("\""); // Optionally set the throttle
+        if (heartbeat != -1)
+            config.append("\n  \"heartbeat\" \"").append(String.valueOf(heartbeat)).append("\""); // Optionally set the heartbeat
+
+        if (!auth.isEmpty()) { // Optionally set our auth keys
+            config.append("\n  \"auth\"").append("\n  {"); // Open 'er up
+            for (Map.Entry<String, String> entry : auth.entrySet())
+                config.append("\n   \"").append(entry.getKey()).append("\" \"").append(entry.getValue()).append("\""); // Stick each entry in there
+            config.append("\n  }"); // Close 'er down
+        }
+
+        if (!data.isEmpty()) { // "Optionally" set our data requests
+            config.append("\n  \"data\"").append("\n  {"); // Open 'er up
+            for (DataType type : data)
+                config.append("\n   \"").append(type.toString()).append("\" \"").append("1").append("\""); // Just stick each type we want with a value of 1 to enable it
+            config.append("\n  }"); // Close 'er down
+        }
+
+        config.append("\n}"); // Close the config object
+
+        return config.toString();
     }
 }
