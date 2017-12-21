@@ -14,14 +14,18 @@ public class GameState {
     private final Map<String, Player> allPlayers;
     @SerializedName("phase_countdowns")
     private final PhaseCountdowns phaseCountdowns;
+    // FIXME CS returns true as the value for all added fields. Need to just collect a list
+//    private final GameState added;
+    private final GameState previously;
 
-    public GameState(Provider provider, GameMap map, Round round, Player player, Map<String, Player> allPlayers, PhaseCountdowns phaseCountdowns) {
+    public GameState(Provider provider, GameMap map, Round round, Player player, Map<String, Player> allPlayers, PhaseCountdowns phaseCountdowns, GameState previously) {
         this.provider = provider;
         this.map = map;
         this.round = round;
         this.player = player;
         this.allPlayers = allPlayers;
         this.phaseCountdowns = phaseCountdowns;
+        this.previously = previously;
     }
 
     public Provider getProvider() {
@@ -50,5 +54,9 @@ public class GameState {
 
     public PhaseCountdowns getPhaseCountdowns() {
         return phaseCountdowns;
+    }
+
+    public GameState getPreviously() {
+        return previously;
     }
 }

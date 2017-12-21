@@ -11,7 +11,7 @@ import java.util.Locale;
 
 public class UpdateWatcher implements IStateUpdateWatcher {
 
-    public void handleUpdatedState(GameState newState, GameState oldState) {
+    public void handleUpdatedState(GameState newState) {
         if (newState.isOurUser()) {
             if (newState.getMap() != null) { // We're in a match of some kind
                 GameMap map = newState.getMap();

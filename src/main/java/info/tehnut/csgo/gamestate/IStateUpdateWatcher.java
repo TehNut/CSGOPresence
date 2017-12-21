@@ -11,7 +11,6 @@ public interface IStateUpdateWatcher {
      * un-subscribed with {@link CSGOGamestate#unsubscribeWatcher(IStateUpdateWatcher)}.
      *
      * @param newState - The new state as sent by the game. Nonnull.
-     * @param oldState - The last state sent. Nullable.
      */
-    void handleUpdatedState(GameState newState, GameState oldState);
+    void handleUpdatedState(GameState newState);
 }

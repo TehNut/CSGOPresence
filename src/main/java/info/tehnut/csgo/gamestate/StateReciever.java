@@ -16,7 +16,6 @@ public class StateReciever implements HttpHandler {
 
     private static final Gson GSON = new GsonBuilder().serializeNulls().setPrettyPrinting().disableHtmlEscaping().create();
     private static final DateFormat FORMAT = new SimpleDateFormat("HH:mm:ss");
-    private static GameState oldState;
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
@@ -25,8 +24,8 @@ public class StateReciever implements HttpHandler {
         System.out.println(FORMAT.format(new Date()) + " | Received state update from " + gameState.getProvider().getName() + ". Posting to watchers.");
 
         for (IStateUpdateWatcher watcher : CSGOGamestate.UPDATE_WATCHERS)
-            watcher.handleUpdatedState(gameState, oldState);
+            watcher.handleUpdatedState(gameState);
 
-        oldState = gameState;
+        httpExchange.sendResponseHeaders(200, 0);
     }
 }
