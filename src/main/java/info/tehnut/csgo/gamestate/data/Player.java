@@ -17,8 +17,9 @@ public class Player {
     private final Map<String, Weapon> weapons;
     @SerializedName("match_stats")
     private final MatchStats matchStats;
+    private final Position position;
 
-    public Player(String steamId, String name, int observerSlot, String team, String activity, PlayerState state, Map<String, Weapon> weapons, MatchStats matchStats) {
+    public Player(String steamId, String name, int observerSlot, String team, String activity, PlayerState state, Map<String, Weapon> weapons, MatchStats matchStats, Position position) {
         this.steamId = steamId;
         this.name = name;
         this.observerSlot = observerSlot;
@@ -27,6 +28,7 @@ public class Player {
         this.state = state;
         this.weapons = weapons;
         this.matchStats = matchStats;
+        this.position = position;
     }
 
     public String getSteamId() {
@@ -63,5 +65,9 @@ public class Player {
 
     public MatchStats getMatchStats() {
         return matchStats;
+    }
+
+    public Position getPosition() {
+        return position;
     }
 }
