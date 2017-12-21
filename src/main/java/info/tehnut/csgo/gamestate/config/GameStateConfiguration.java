@@ -7,14 +7,50 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * See the Valve <a href="https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive_Game_State_Integration">Wiki page</a>
+ * for the full details.
+ */
 public class GameStateConfiguration {
 
     private final String name;
+    /**
+     * Game will be making POST requests to this uri. If the endpoint needs traffic to be encrypted in flight then it is
+     * recommended to specify a secure uri and use SSL on the service end. Steam client will automatically use SSL and
+     * validate endpoint certificate for https destinations.
+     */
     private final String uri;
+    /**
+     * Game expects an HTTP 2XX response code from its HTTP POST request, and game will not attempt submitting the next
+     * HTTP POST request while a previous request is still in flight. The game will consider the request as timed out if
+     * a response is not received within so many seconds, and will re-heartbeat next time with full state omitting any
+     * delta-computation. If the setting is not specified then default short timeout of 1.1 sec will be used.
+     */
     private final double timeout;
+    /**
+     * Because multiple game events tend to occur one after another very quickly, it is recommended to specify a non-zero
+     * buffer. When buffering is enabled, the game will collect events for so many seconds to report a bigger delta. For
+     * localhost service integration this is less of an issue and can be tuned to match the needs of the service or set
+     * to 0.0 to disable buffering completely. If the setting is not specified then default buffer of 0.1 sec will be used.
+     */
     private final double buffer;
+    /**
+     * For high-traffic endpoints this setting will make the game client not send another request for at least this many
+     * seconds after receiving previous HTTP 2XX response to avoid notifying the service when game state changes too frequently.
+     * If the setting is not specified then default throttle of 1.0 sec will be used.
+     */
     private final double throttle;
+    /**
+     * Even if no game state change occurs, this setting instructs the game to send a request so many seconds after receiving
+     * previous HTTP 2XX response. The service can be configured to consider game as offline or disconnected if it didn't
+     * get a notification for a significant period of time exceeding the heartbeat interval.
+     */
     private final double heartbeat;
+    /**
+     *  In most localhost or even LAN integration scenarios this section can be completely omitted, but when it is present,
+     *  fields in this section will be transmitted as JSON string fields to the endpoint to authenticate the payload. It
+     *  is recommended for the endpoint to also use SSL to protect the in flight payload containing an authentication block.
+     */
     private final Map<String, String> auth;
     private final Set<DataType> data;
 
