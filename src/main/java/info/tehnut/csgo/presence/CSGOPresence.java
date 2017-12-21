@@ -46,6 +46,7 @@ public class CSGOPresence {
         int port = options.has("port") ? (int) options.valueOf("port") : 1234;
 
         MapImages.initNames();
+        GameModes.initNames();
 
         try {
             if (!dir.isEmpty()) {
