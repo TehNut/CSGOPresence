@@ -7,6 +7,7 @@ import info.tehnut.csgo.gamestate.CSGOGamestate;
 import info.tehnut.csgo.gamestate.config.DataType;
 import info.tehnut.csgo.gamestate.config.GSConfigBuilder;
 import info.tehnut.csgo.gamestate.config.GameStateConfiguration;
+import info.tehnut.csgo.util.IOUtils;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
@@ -17,7 +18,15 @@ public class CSGOPresence {
 
     public static final DiscordRichPresence DISCORD_PRESENCE = new DiscordRichPresence();
     public static final String APPLICATION_ID = "390310250886070274";
+    public static final String PROCESS_LIST_COMMAND;
+    static {
+        if (System.getProperty("os.name").startsWith("Windows"))
+            PROCESS_LIST_COMMAND = System.getenv("windir") + "\\system32\\" + "tasklist.exe /fo csv /nh";
+        else
+            PROCESS_LIST_COMMAND = "ps -few";
+    }
 
+    public static boolean discordConnected = false;
     public static boolean active = true;
     public static Thread callbackThread;
 
@@ -61,7 +70,7 @@ public class CSGOPresence {
                                 DataType.PLAYER_WEAPONS,
                                 DataType.PLAYER_MATCH_STATS
                         )
-                        .withTimeout(15)
+                        .withHeartbeat(2)
                         .build();
 
                 gsConfig.print(new File(dir), true);
@@ -77,10 +86,31 @@ public class CSGOPresence {
     private static void setupRPC() {
         DiscordEventHandlers handlers = new DiscordEventHandlers();
         DiscordRPC.INSTANCE.Discord_Initialize(APPLICATION_ID, handlers, true, "");
+        discordConnected = true;
+
+        if (callbackThread != null && callbackThread.isAlive())
+            callbackThread.interrupt();
 
         callbackThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted() && active) {
-                DiscordRPC.INSTANCE.Discord_RunCallbacks();
+                if (!isCSGORunning()) {
+                    if (discordConnected) {
+                        DiscordRPC.INSTANCE.Discord_UpdatePresence(null);
+                        DiscordRPC.INSTANCE.Discord_RunCallbacks();
+                        DiscordRPC.INSTANCE.Discord_Shutdown();
+                        System.out.println("CSGO not detected. Shutting down RPC.");
+                        discordConnected = false;
+                    }
+                } else {
+                    if (!discordConnected) {
+                        DiscordRPC.INSTANCE.Discord_Initialize(APPLICATION_ID, handlers, true, "");
+                        System.out.println("CSGO detected. Initializing RPC.");
+                        discordConnected = true;
+                    }
+                }
+
+                if (discordConnected)
+                    DiscordRPC.INSTANCE.Discord_RunCallbacks();
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
@@ -89,6 +119,18 @@ public class CSGOPresence {
             }
         }, "RPC-Callback-Handler");
         callbackThread.start();
+
+        DISCORD_PRESENCE.largeImageKey = MapImages.UNKNOWN.getImage();
+        DiscordRPC.INSTANCE.Discord_UpdatePresence(DISCORD_PRESENCE);
     }
 
+    public static boolean isCSGORunning() {
+        try {
+            Process process = Runtime.getRuntime().exec(PROCESS_LIST_COMMAND);
+            String response = IOUtils.toString(process.getInputStream());
+            return response.contains("csgo"); // 10/10 check
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
