@@ -61,8 +61,8 @@ public class GSConfigBuilder {
         if (uri == null)
             throw new RuntimeException("uri must be set.");
 
-        if (timeout == -1)
-            throw new RuntimeException("timeout must be set.");
+        if (heartbeat == -1)
+            throw new RuntimeException("heartbeat must be set.");
 
         return new GameStateConfiguration(name, uri, timeout, buffer, throttle, heartbeat, auth, data);
     }

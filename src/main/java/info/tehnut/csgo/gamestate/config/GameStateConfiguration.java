@@ -94,13 +94,13 @@ public class GameStateConfiguration {
     public String toJson() {
         JsonObject config = new JsonObject();
         config.addProperty("uri", uri);
-        config.addProperty("timeout", String.valueOf(timeout));
+        config.addProperty("heartbeat", String.valueOf(heartbeat));
         if (buffer != -1)
             config.addProperty("buffer", String.valueOf(buffer));
         if (throttle != -1)
             config.addProperty("throttle", String.valueOf(throttle));
-        if (heartbeat != -1)
-            config.addProperty("heartbeat", String.valueOf(heartbeat));
+        if (timeout != -1)
+            config.addProperty("timeout", String.valueOf(timeout));
 
         if (!auth.isEmpty()) {
             JsonObject auth = new JsonObject();
