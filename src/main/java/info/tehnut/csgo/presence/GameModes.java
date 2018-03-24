@@ -6,7 +6,7 @@ import java.util.Map;
 
 public enum GameModes {
 
-    CASUAL_DEFUSAL(true),
+    CASUAL_DEFUSAL("casual", true),
     COMPETETIVE_DEFUSAL(true),
     DEATHMATCH(false),
     // TODO - The others
