@@ -1,5 +1,8 @@
 package info.tehnut.csgo.gamestate.config;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -78,50 +81,48 @@ public class GameStateConfiguration {
         if (configFile.exists() && !overwrite)
             return;
 
-        try {
+        try (FileWriter writer = new FileWriter(configFile)) {
             configFile.delete();
-            configFile.createNewFile();
-            FileWriter writer = new FileWriter(configFile);
             writer.write(toVson());
-            writer.close();
+            System.out.println("Created game state configuration at " + configFile.getAbsolutePath());
         } catch (IOException e) {
             System.out.println("Failed to write game state configuration");
             e.printStackTrace();
         }
     }
 
-    // Dear god this is cancer. Why couldn't it just be normal json :(
-    // TODO - See if we can use gson and just like... nuke the colons or something :thonk:
-    public String toVson() {
-        StringBuilder config = new StringBuilder();
-        config.append("\"").append(name).append("\"\n{"); // Open up our config object
-        config.append("\n  \"uri\" \"").append(uri).append("\""); // Set the URI which is required
-
-        config.append("\n  \"timeout\" \"").append(String.valueOf(timeout)).append("\""); // Set the timeout which *we* require
+    public String toJson() {
+        JsonObject config = new JsonObject();
+        config.addProperty("uri", uri);
+        config.addProperty("timeout", String.valueOf(timeout));
         if (buffer != -1)
-            config.append("\n  \"buffer\" \"").append(String.valueOf(buffer)).append("\""); // Optionally set the buffer
+            config.addProperty("buffer", String.valueOf(buffer));
         if (throttle != -1)
-            config.append("\n  \"throttle\" \"").append(String.valueOf(throttle)).append("\""); // Optionally set the throttle
+            config.addProperty("throttle", String.valueOf(throttle));
         if (heartbeat != -1)
-            config.append("\n  \"heartbeat\" \"").append(String.valueOf(heartbeat)).append("\""); // Optionally set the heartbeat
+            config.addProperty("heartbeat", String.valueOf(heartbeat));
 
-        if (!auth.isEmpty()) { // Optionally set our auth keys
-            config.append("\n  \"auth\"").append("\n  {"); // Open 'er up
-            for (Map.Entry<String, String> entry : auth.entrySet())
-                config.append("\n   \"").append(entry.getKey()).append("\" \"").append(entry.getValue()).append("\""); // Stick each entry in there
-            config.append("\n  }"); // Close 'er down
+        if (!auth.isEmpty()) {
+            JsonObject auth = new JsonObject();
+            this.auth.forEach(auth::addProperty);
+            config.add("auth", auth);
         }
 
-        if (!data.isEmpty()) { // "Optionally" set our data requests
-            config.append("\n  \"data\"").append("\n  {"); // Open 'er up
-            for (DataType type : data)
-                config.append("\n   \"").append(type.toString()).append("\" \"").append("1").append("\""); // Just stick each type we want with a value of 1 to enable it
-            config.append("\n  }"); // Close 'er down
+        if (!data.isEmpty()) {
+            JsonObject data = new JsonObject();
+            this.data.forEach(dataType -> data.addProperty(dataType.toString(), "1"));
+            config.add("data", data);
         }
 
-        config.append("\n}"); // Close the config object
+        JsonObject object = new JsonObject();
+        object.add(name, config);
 
-        return config.toString();
+        return new GsonBuilder().setPrettyPrinting().create().toJson(object);
+    }
+
+    public String toVson() {
+        String json = toJson();
+        return json.substring(1, json.length() - 1).replaceAll("\":", "\"").replaceAll(",\n", "\n");
     }
 
     public String getName() {
