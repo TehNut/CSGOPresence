@@ -2,17 +2,34 @@
 
 This app provides Discord rich presence integration for Counter Strike: Global Offensive.
 
-![Preview](https://cdn.discordapp.com/attachments/168162260852670465/392506022272696320/unknown.png)
+Hovering over the map displays the map name.
 
-There is also an embedded CSGO Game State Integration handler for anybody looking for one of those. It depends on Guava, Gson, and Commons-IO.
+![Preview](https://cdn.discordapp.com/attachments/345670598472499201/427246141503963157/unknown.png)
 
-Run with `--help` for a list of arguments to provide.
+Hovering over the gun displays the current Kills, Assists, and Deaths.
 
-## Status
+![Preview](https://cdn.discordapp.com/attachments/345670598472499201/427246290296897547/unknown.png)
 
-Currently there are no map images besides the badge for `de_dust2`. It also doesn't create the game state config for you.
+There is also an embedded CSGO Game State Integration handler for anybody looking for one of those.
 
-If you want to try this, clone it or download the zip and run `gradlew build`. Run the jar classified with `-all`.
+## Building
+
+To build, open a terminal in the project directory and run `gradlew build`. The built jar will be stored in `/build/libs/`.
+
+## Running
+
+To run the application, open a terminal wherever you have the the jar at and run `java -jar CSGOPresence-$VERSION-all.jar`. Note that if you do not run the jar with `-all` in the name, you will have to provide the required libraries yourself.
+
+Run with `--help` for a list of optional arguments to provide.
+
+## Libraries
+
+CSGOPresence currently depends on the following libraries
+
+* [Java-DiscordRPC](https://github.com/MinnDevelopment/java-discord-rpc)
+* [Java Native Access](https://github.com/java-native-access/jna)
+* [Gson](https://github.com/google/gson)
+* [JOpt Simple](https://pholser.github.io/jopt-simple/)
 
 ## Recommended Config
 
