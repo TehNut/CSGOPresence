@@ -3,6 +3,8 @@ package info.tehnut.csgo.presence;
 import club.minnced.discord.rpc.DiscordEventHandlers;
 import club.minnced.discord.rpc.DiscordRPC;
 import club.minnced.discord.rpc.DiscordRichPresence;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import info.tehnut.csgo.gamestate.CSGOGamestate;
 import info.tehnut.csgo.gamestate.config.DataType;
 import info.tehnut.csgo.gamestate.config.GSConfigBuilder;
@@ -13,11 +15,16 @@ import joptsimple.OptionSet;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CSGOPresence {
 
     public static final DiscordRichPresence DISCORD_PRESENCE = new DiscordRichPresence();
     public static final String APPLICATION_ID = "390310250886070274";
+    public static final Map<String, String> MAP_IMAGES = new HashMap<>();
     public static final String PROCESS_LIST_COMMAND;
     static {
         if (System.getProperty("os.name").startsWith("Windows"))
@@ -54,7 +61,17 @@ public class CSGOPresence {
         String dir = options.has("dir") ? (String) options.valueOf("dir") : "";
         int port = options.has("port") ? (int) options.valueOf("port") : 1234;
 
-        MapImages.initNames();
+        try {
+            URL url = new URL("https://raw.githubusercontent.com/TehNut/CSGOPresence/master/img/map_images.json");
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            String responseJson = IOUtils.toString(urlConnection.getInputStream());
+            MAP_IMAGES.putAll(new Gson().fromJson(responseJson, new TypeToken<Map<String, String>>(){}.getType()));
+            System.out.println("Pulled map image names from remote server.");
+        } catch (Exception e) {
+            System.out.println("Failed to pull map image names from remote server.");
+        }
+
         GameModes.initNames();
 
         try {
@@ -120,7 +137,7 @@ public class CSGOPresence {
         }, "RPC-Callback-Handler");
         callbackThread.start();
 
-        DISCORD_PRESENCE.largeImageKey = MapImages.UNKNOWN.getImage();
+        DISCORD_PRESENCE.largeImageKey = "default";
         DiscordRPC.INSTANCE.Discord_UpdatePresence(DISCORD_PRESENCE);
     }
 

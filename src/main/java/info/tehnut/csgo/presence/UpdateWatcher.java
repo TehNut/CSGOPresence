@@ -17,8 +17,10 @@ public class UpdateWatcher implements IStateUpdateWatcher {
             if (!newState.isOurUser())
                 CSGOPresence.DISCORD_PRESENCE.details += " (Spectating)";
 
-            MapImages mapImage = MapImages.getbyName(map.getName());
-            CSGOPresence.DISCORD_PRESENCE.largeImageKey = mapImage.getImage();
+            String imageName = CSGOPresence.MAP_IMAGES.getOrDefault(map.getName(), "default");
+            if (imageName.isEmpty())
+                imageName = map.getName();
+            CSGOPresence.DISCORD_PRESENCE.largeImageKey = imageName;
             CSGOPresence.DISCORD_PRESENCE.largeImageText = "Map: " + map.getName();
 
             String scoreText = "Score: ";
@@ -42,7 +44,7 @@ public class UpdateWatcher implements IStateUpdateWatcher {
         } else { // We're not in a match. Must be in the main menu... or at least a menu of some sort... probably
             CSGOPresence.DISCORD_PRESENCE.details = "In menu";
             CSGOPresence.DISCORD_PRESENCE.state = null;
-            CSGOPresence.DISCORD_PRESENCE.largeImageKey = "unknown";
+            CSGOPresence.DISCORD_PRESENCE.largeImageKey = "default";
             CSGOPresence.DISCORD_PRESENCE.largeImageText = null;
             CSGOPresence.DISCORD_PRESENCE.smallImageKey = null;
             CSGOPresence.DISCORD_PRESENCE.smallImageText = null;
