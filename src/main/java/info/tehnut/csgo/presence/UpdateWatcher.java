@@ -23,17 +23,7 @@ public class UpdateWatcher implements IStateUpdateWatcher {
             CSGOPresence.DISCORD_PRESENCE.largeImageKey = imageName;
             CSGOPresence.DISCORD_PRESENCE.largeImageText = "Map: " + map.getName();
 
-            String scoreText = "Score: ";
-            if (gameMode.isTeamOriented()) { // If we're in a team-based mode (ie: Defusal)
-                boolean ct = newState.getPlayer().getTeam().equalsIgnoreCase("ct");
-                if (ct)
-                    scoreText += map.getCounterTerrorist().getScore() + " - " + map.getTerrorist().getScore();
-                else
-                    scoreText += map.getTerrorist().getScore() + " - " + map.getCounterTerrorist().getScore();
-            } else if (newState.isOurUser()) { // Non-team-based (ie: Death match)
-                scoreText += newState.getPlayer().getMatchStats().getScore();
-            }
-            CSGOPresence.DISCORD_PRESENCE.state = scoreText;
+            CSGOPresence.DISCORD_PRESENCE.state = gameMode.getScoreHandler().getScore(newState.getPlayer(), map);
 
             if (!newState.isOurUser())
                 return;

@@ -6,27 +6,27 @@ import java.util.Map;
 
 public enum GameModes {
 
-    CASUAL(true),
-    COMPETETIVE(true),
-    DEATHMATCH(false),
-    ARMS_RACE("gungameprogressive", false),
-    DEMOLITION("gungametrbomb", true),
-    WINGMAN(true),
-    UNKNOWN(false),
+    CASUAL(IScoreHandler.TEAM_ORIENTED),
+    COMPETETIVE(IScoreHandler.TEAM_ORIENTED),
+    DEATHMATCH(IScoreHandler.NOT_TEAM_ORIENTED),
+    ARMS_RACE("gungameprogressive", IScoreHandler.NOT_TEAM_ORIENTED), // TODO Look for way to calculate progress through weapon tree
+    DEMOLITION("gungametrbomb", IScoreHandler.TEAM_ORIENTED),
+    WINGMAN(IScoreHandler.TEAM_ORIENTED),
+    UNKNOWN(IScoreHandler.NOT_TEAM_ORIENTED),
     ;
 
     private static final Map<String, GameModes> BY_NAME = new HashMap<>();
 
     private final String internalName;
-    private final boolean teamOriented;
+    private final IScoreHandler scoreHandler;
 
-    GameModes(String internalName, boolean teamOriented) {
+    GameModes(String internalName, IScoreHandler scoreHandler) {
         this.internalName = internalName;
-        this.teamOriented = teamOriented;
+        this.scoreHandler = scoreHandler;
     }
 
-    GameModes(boolean teamOriented) {
-        this(null, teamOriented);
+    GameModes(IScoreHandler scoreHandler) {
+        this(null, scoreHandler);
     }
 
     public String getInternalName() {
@@ -43,8 +43,8 @@ public enum GameModes {
         return String.join(" ", words);
     }
 
-    public boolean isTeamOriented() {
-        return teamOriented;
+    public IScoreHandler getScoreHandler() {
+        return scoreHandler;
     }
 
     public static GameModes getbyName(String name) {
