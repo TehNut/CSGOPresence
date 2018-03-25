@@ -57,6 +57,7 @@ public class CSGOPresence {
         }
 
         setupRPC();
+        TrayHandler.init();
 
         String dir = options.has("dir") ? (String) options.valueOf("dir") : "";
         int port = options.has("port") ? (int) options.valueOf("port") : 1234;
