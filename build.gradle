@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'info.tehnut.csgo.presence'
-version '1.0.0'
+version '1.0.1'
 mainClassName = group + ".CSGOPresence"
 
 sourceCompatibility = 1.8
