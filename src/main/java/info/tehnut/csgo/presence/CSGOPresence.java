@@ -42,6 +42,7 @@ public class CSGOPresence {
         parser.accepts("dir", "The directory that CSGO is installed to. If provided, a default config will be printed.").withRequiredArg().ofType(String.class);
         parser.accepts("port", "The port to run the HTTP server on.").withRequiredArg().ofType(Integer.class);
         parser.accepts("help", "Prints help text and exits.");
+        parser.accepts("matchSurf", "Makes an attempt to match surf maps based on their name prefix.");
 
         OptionSet options = parser.parse(args);
 
@@ -57,10 +58,12 @@ public class CSGOPresence {
         }
 
         setupRPC();
-        TrayHandler.init();
 
+        TrayHandler.tryFindSurf = options.has("matchSurf");
         String dir = options.has("dir") ? (String) options.valueOf("dir") : "";
         int port = options.has("port") ? (int) options.valueOf("port") : 1234;
+
+        TrayHandler.init();
 
         try {
             URL url = new URL("https://raw.githubusercontent.com/TehNut/CSGOPresence/master/img/map_images.json");

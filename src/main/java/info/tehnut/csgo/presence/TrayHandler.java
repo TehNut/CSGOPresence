@@ -5,6 +5,8 @@ import java.net.URL;
 
 public class TrayHandler {
 
+    public static boolean tryFindSurf;
+
     public static void init() {
         if (!SystemTray.isSupported())
             return;
@@ -16,6 +18,10 @@ public class TrayHandler {
 
         menu.add(new MenuItem("CSGOPresence by TehNut"));
         menu.addSeparator();
+
+        CheckboxMenuItem attemptSurfRecognition = new CheckboxMenuItem("Try to match surf maps", tryFindSurf);
+        attemptSurfRecognition.addItemListener(listener -> tryFindSurf = attemptSurfRecognition.getState());
+        menu.add(attemptSurfRecognition);
 
         MenuItem githubButton = new MenuItem("GitHub");
         githubButton.addActionListener(listener -> {

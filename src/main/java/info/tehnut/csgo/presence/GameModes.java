@@ -12,6 +12,7 @@ public enum GameModes {
     ARMS_RACE("gungameprogressive", IScoreHandler.NOT_TEAM_ORIENTED), // TODO Look for way to calculate progress through weapon tree
     DEMOLITION("gungametrbomb", IScoreHandler.TEAM_ORIENTED),
     WINGMAN(IScoreHandler.TEAM_ORIENTED),
+    SURF(IScoreHandler.NOT_TEAM_ORIENTED),
     UNKNOWN(IScoreHandler.NOT_TEAM_ORIENTED),
     ;
 
