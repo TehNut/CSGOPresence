@@ -73,8 +73,6 @@ public class CSGOPresence {
             System.out.println("Failed to pull map image names from remote server.");
         }
 
-        GameModes.initNames();
-
         try {
             if (!dir.isEmpty()) {
                 GameStateConfiguration gsConfig = new GSConfigBuilder("Discord Rich Presence Integration")

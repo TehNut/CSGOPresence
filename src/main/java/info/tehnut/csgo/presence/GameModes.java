@@ -16,6 +16,10 @@ public enum GameModes {
     ;
 
     private static final Map<String, GameModes> BY_NAME = new HashMap<>();
+    static {
+        for (GameModes mode : GameModes.values())
+            BY_NAME.put(mode.getInternalName(), mode);
+    }
 
     private final String internalName;
     private final IScoreHandler scoreHandler;
@@ -49,10 +53,5 @@ public enum GameModes {
 
     public static GameModes getbyName(String name) {
         return BY_NAME.getOrDefault(name, UNKNOWN);
-    }
-
-    public static void initNames() {
-        for (GameModes mode : GameModes.values())
-            BY_NAME.put(mode.getInternalName(), mode);
     }
 }
