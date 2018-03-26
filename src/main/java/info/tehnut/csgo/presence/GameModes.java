@@ -7,7 +7,7 @@ import java.util.Map;
 public enum GameModes {
 
     CASUAL(IScoreHandler.TEAM_ORIENTED),
-    COMPETETIVE(IScoreHandler.TEAM_ORIENTED),
+    COMPETITIVE(IScoreHandler.TEAM_ORIENTED),
     DEATHMATCH(IScoreHandler.NOT_TEAM_ORIENTED),
     ARMS_RACE("gungameprogressive", IScoreHandler.NOT_TEAM_ORIENTED), // TODO Look for way to calculate progress through weapon tree
     DEMOLITION("gungametrbomb", IScoreHandler.TEAM_ORIENTED),
