@@ -26,13 +26,6 @@ public class CSGOPresence {
     public static final DiscordRichPresence DISCORD_PRESENCE = new DiscordRichPresence();
     public static final String APPLICATION_ID = "390310250886070274";
     public static final Map<String, String> MAP_IMAGES = new HashMap<>();
-    public static final String PROCESS_LIST_COMMAND;
-    static {
-        if (System.getProperty("os.name").startsWith("Windows"))
-            PROCESS_LIST_COMMAND = System.getenv("windir") + "\\system32\\" + "tasklist.exe /fo csv /nh";
-        else
-            PROCESS_LIST_COMMAND = "ps -few";
-    }
 
     public static boolean discordConnected = false;
     public static boolean active = true;
