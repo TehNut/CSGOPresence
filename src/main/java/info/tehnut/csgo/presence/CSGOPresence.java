@@ -9,7 +9,8 @@ import info.tehnut.csgo.gamestate.CSGOGamestate;
 import info.tehnut.csgo.gamestate.config.DataType;
 import info.tehnut.csgo.gamestate.config.GSConfigBuilder;
 import info.tehnut.csgo.gamestate.config.GameStateConfiguration;
-import info.tehnut.csgo.util.IOUtils;
+import info.tehnut.csgo.util.Logger;
+import info.tehnut.csgo.util.Utils;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
@@ -51,7 +52,7 @@ public class CSGOPresence {
             try {
                 parser.printHelpOn(System.out);
             } catch (Exception e) {
-                System.out.println("Failed to print help text.");
+                Logger.DEFAULT.error("Failed to print help text.");
                 e.printStackTrace();
             }
             return;
@@ -69,11 +70,11 @@ public class CSGOPresence {
             URL url = new URL("https://raw.githubusercontent.com/TehNut/CSGOPresence/master/img/map_images.json");
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
-            String responseJson = IOUtils.toString(urlConnection.getInputStream());
+            String responseJson = Utils.toString(urlConnection.getInputStream());
             MAP_IMAGES.putAll(new Gson().fromJson(responseJson, new TypeToken<Map<String, String>>(){}.getType()));
-            System.out.println("Pulled map image names from remote server.");
+            Logger.DEFAULT.info("Pulled map image names from remote server.");
         } catch (Exception e) {
-            System.out.println("Failed to pull map image names from remote server.");
+            Logger.DEFAULT.error("Failed to pull map image names from remote server.");
         }
 
         try {
@@ -96,8 +97,9 @@ public class CSGOPresence {
             }
             CSGOGamestate.initGamestate(port);
             CSGOGamestate.subscribeWatcher(new UpdateWatcher());
+            Logger.DEFAULT.info("Subscribed game state watcher.");
         } catch (IOException e) {
-            System.out.println("Failed to initialize game state.");
+            Logger.DEFAULT.error("Failed to initialize game state.");
             e.printStackTrace();
         }
     }
@@ -112,18 +114,18 @@ public class CSGOPresence {
 
         callbackThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted() && active) {
-                if (!isCSGORunning()) {
+                if (!Utils.isCSGORunning()) {
                     if (discordConnected) {
                         DiscordRPC.INSTANCE.Discord_UpdatePresence(null);
                         DiscordRPC.INSTANCE.Discord_RunCallbacks();
                         DiscordRPC.INSTANCE.Discord_Shutdown();
-                        System.out.println("CSGO not detected. Shutting down RPC.");
+                        Logger.DEFAULT.info("CSGO not detected. Shutting down RPC.");
                         discordConnected = false;
                     }
                 } else {
                     if (!discordConnected) {
                         DiscordRPC.INSTANCE.Discord_Initialize(APPLICATION_ID, handlers, true, "");
-                        System.out.println("CSGO detected. Initializing RPC.");
+                        Logger.DEFAULT.info("CSGO detected. Initializing RPC.");
                         discordConnected = true;
                     }
                 }
@@ -143,13 +145,4 @@ public class CSGOPresence {
         DiscordRPC.INSTANCE.Discord_UpdatePresence(DISCORD_PRESENCE);
     }
 
-    public static boolean isCSGORunning() {
-        try {
-            Process process = Runtime.getRuntime().exec(PROCESS_LIST_COMMAND);
-            String response = IOUtils.toString(process.getInputStream());
-            return response.contains("csgo"); // 10/10 check
-        } catch (Exception e) {
-            return false;
-        }
-    }
 }
