@@ -1,9 +1,9 @@
 <template>
     <div class="container">
         <div class="text-container">
-            <h1 class="title">Gourmet</h1>
+            <h1 class="title">CSGO Presence</h1>
             <h3 class="body">
-                Harvest creator.
+                Rich Presence Integration for Discord.
             </h3>
         </div>
     </div>
@@ -19,6 +19,7 @@ export default {
 .container {
     width: 100%;
     height: 200px;
+    background: hsla(36, 91%, 56%, 0.8);
 }
 
 .text-container {
